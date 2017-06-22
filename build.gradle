@@ -1,0 +1,31 @@
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath 'io.ratpack:ratpack-gradle:1.4.5'
+  }
+}
+
+apply plugin: 'io.ratpack.ratpack-java'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+
+repositories {
+  jcenter()
+}
+
+dependencies {
+  compile ratpack.dependency('spring-boot')
+  compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.5.4.RELEASE'
+  compile 'com.h2database:h2:1.4.187'
+}
+
+mainClassName = "org.aivan.ratserver.Main"
+
+eclipse {
+  classpath {
+    containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
+    containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
+  }
+}
