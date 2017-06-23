@@ -1,32 +1,42 @@
 buildscript {
-  repositories {
-    jcenter()
-  }
-  dependencies {
-    classpath 'io.ratpack:ratpack-gradle:1.4.5'
-  }
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'io.ratpack:ratpack-gradle:1.4.5'
+    }
+}
+
+plugins {
+    id "net.foragerr.jmeter" version "1.0.5-2.13"
 }
 
 apply plugin: 'io.ratpack.ratpack-java'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
+jmeter {
+    jmTestFiles = [file("jmeter/simple-test-100.jmx")]
+    //jmSystemPropertiesFiles = [file("src/test/jmeter/user.properties")]
+    enableExtendedReports = true
+}
+
 repositories {
-  jcenter()
+    jcenter()
 }
 
 dependencies {
-  compile ratpack.dependency('spring-boot')
-  compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.5.4.RELEASE'
-  compile 'com.h2database:h2:1.4.196'
-  testCompile 'junit:junit:4.12'
+    compile ratpack.dependency('spring-boot')
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.5.4.RELEASE'
+    compile 'com.h2database:h2:1.4.196'
+    testCompile 'junit:junit:4.12'
 }
 
 mainClassName = "org.aivan.ratserver.Main"
 
 eclipse {
-  classpath {
-    containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
-    containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
-  }
+    classpath {
+        containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
+        containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
+    }
 }
