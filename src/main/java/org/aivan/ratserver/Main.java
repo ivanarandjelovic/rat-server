@@ -50,27 +50,29 @@ public class Main {
                                                     )
                                                     .put(() -> {
                                                         // Read the JSON from the request
-                                                        String json = ctx.getRequest().getBody().toString();
-                                                        // Parse out the JSON body into a Map
-                                                        Map<String, String> body = mapper.readValue(json, new TypeReference<Map<String, String>>() {
+                                                        ctx.getRequest().getBody().then(request -> {
+                                                        	String  json = request.getText();
+                                                            // Parse out the JSON body into a Map
+                                                            Map<String, String> body = mapper.readValue(json, new TypeReference<Map<String, String>>() {
+                                                            });
+                                                            // Check to make sure the request body contained an "email" address
+                                                            if (body.containsKey("email")) {
+                                                                userPromise
+                                                                        // map the new email address on to the user entity
+                                                                        .map(user -> {
+                                                                            user.setEmail(body.get("email"));
+                                                                            return user;
+                                                                        })
+                                                                        // and use the blocking thread pool to save the updated details
+                                                                        .blockingMap(userRepository::save)
+                                                                        // finally, send the updated user entity back to the client
+                                                                        .then(u1 -> sendUser(ctx, u1));
+                                                            } else {
+                                                                // bad request; we didn't get an email address
+                                                                ctx.getResponse().status(400);
+                                                                ctx.getResponse().send(mapper.writeValueAsBytes(NO_EMAIL));
+                                                            }
                                                         });
-                                                        // Check to make sure the request body contained an "email" address
-                                                        if (body.containsKey("email")) {
-                                                            userPromise
-                                                                    // map the new email address on to the user entity
-                                                                    .map(user -> {
-                                                                        user.setEmail(body.get("email"));
-                                                                        return user;
-                                                                    })
-                                                                    // and use the blocking thread pool to save the updated details
-                                                                    .blockingMap(userRepository::save)
-                                                                    // finally, send the updated user entity back to the client
-                                                                    .then(u1 -> sendUser(ctx, u1));
-                                                        } else {
-                                                            // bad request; we didn't get an email address
-                                                            ctx.getResponse().status(400);
-                                                            ctx.getResponse().send(mapper.writeValueAsBytes(NO_EMAIL));
-                                                        }
                                                     })
                                                     .delete(() ->
                                                             userPromise
@@ -96,13 +98,15 @@ public class Main {
                                     ctx.byMethod(method -> method
                                             .post(() -> {
                                                 // read the JSON request body...
-                                                String json = ctx.getRequest().getBody().toString();
-                                                // ... and convert it into a user entity
-                                                User user = mapper.readValue(json, User.class);
-                                                // save the user entity on a blocking thread and
-                                                // render the user entity back to the client
-                                                Blocking.get(() -> userRepository.save(user))
-                                                        .then(u1 -> sendUser(ctx, u1));
+                                                ctx.getRequest().getBody().then(body -> {
+                                                	String  json = body.getText();
+	                                                // ... and convert it into a user entity
+	                                                User user = mapper.readValue(json, User.class);
+	                                                // save the user entity on a blocking thread and
+	                                                // render the user entity back to the client
+	                                                Blocking.get(() -> userRepository.save(user))
+	                                                        .then(u1 -> sendUser(ctx, u1));
+                                                });
                                             })
                                             .get(() ->
                                                     // make the DB call, on a blocking thread, to list all users
