@@ -16,7 +16,7 @@ apply plugin: 'idea'
 apply plugin: 'eclipse'
 
 jmeter {
-    jmTestFiles = [file("jmeter/simple-test-100.jmx")]
+    jmTestFiles = [file("jmeter/user-test.jmx")]
     //jmSystemPropertiesFiles = [file("src/test/jmeter/user.properties")]
     enableExtendedReports = true
 }
