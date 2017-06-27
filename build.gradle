@@ -29,6 +29,9 @@ dependencies {
     compile ratpack.dependency('spring-boot')
     compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.5.4.RELEASE'
     compile 'com.h2database:h2:1.4.196'
+    compile 'io.reactivex:rxjava:+'
+    compile 'io.ratpack:ratpack-rx:+'
+    compile 'org.slf4j:slf4j-simple:+'
     testCompile 'junit:junit:4.12'
 }
 
